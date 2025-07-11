@@ -4,9 +4,18 @@ CooKeys pour l'ACIAH
 # Lancer le projet en mode développement
 Se rendre dans le répertoire où a été cloné le repository et lancer la commande
 
-`docker compose up -d`
+`docker compose --profile dev up -d`
 
 La première initialisation sera potentiellement longue car il devra construire les conteneurs et effectuer l'installation des dépendances Javascript.
+
+# Lancer le projet en mode production
+## 1) Construire le conteneur de production
+
+`docker compose --profile prod build`
+
+## 2) Lancer la production en local
+
+`docker compose --profile prod up -d`
 
 ## Installer Docker sous Debian
 ### Installer les dépendances nécessaires
