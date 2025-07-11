@@ -2,6 +2,7 @@ services:
   # ---------- MODE DEV ----------
   cookeys-dev:
     profiles: ["dev"]
+    container_name: cookeys-dev
     build:
       context: .
       target: build          # on reste sur le stage build (Node 14 + code)
@@ -17,6 +18,7 @@ services:
   # ---------- MODE PROD ----------
   cookeys:
     profiles: ["prod"]
+    container_name: cookeys-prod
     build:
       context: .
       target: prod           # stage final Nginx
