@@ -17,6 +17,19 @@ La première initialisation sera potentiellement longue car il devra construire 
 
 `docker compose --profile prod up -d`
 
+# Générer l'application autonome
+Le conteneur n'a pas vocation a resté monté, il n'est là que pour générer les applications.
+## 1) Construire le conteneur de génération
+
+`docker compose --profile app build`
+
+## 2) Lancer la génération en local
+
+`docker compose --profile app up`
+
+## 3) Récupérer les applications
+Elles seront stockées dans le répertoire release de votre repository
+
 ## Installer Docker sous Debian
 ### Installer les dépendances nécessaires
 

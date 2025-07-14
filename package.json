@@ -3,14 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "description": "A Vue.js project",
-  "author": "Sophie",
+  "author": {
+    "name": "Sophie pour Aciah",
+    "email": "aciah@free.fr"
+  },
   "scripts": {
     "build": "node build/build.js",
     "lint": "eslint --ext .js,.vue src test/unit",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --host 0.0.0.0 --disable-host-check",
     "start": "npm run dev",
     "test": "npm run unit",
-    "unit": "jest --config test/unit/jest.conf.js --coverage"
+    "unit": "jest --config test/unit/jest.conf.js --coverage",
+    "electron:serve": "wait-on http://localhost:8080 && electron .",
+    "electron:package": "yarn build && yarn electron-builder --windows --linux"
   },
   "dependencies": {
     "babel": "^6.23.0",
@@ -37,8 +42,11 @@
     "babel-preset-stage-2": "^6.22.0",
     "bootstrap": "^4.5.2",
     "chalk": "^2.0.1",
+    "concurrently": "8.0.0",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.28.0",
+    "electron": "37.2.1",
+    "electron-builder": "^26.0.12",
     "eslint": "^4.15.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-friendly-formatter": "^3.0.0",
@@ -76,6 +84,7 @@
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",
+    "wait-on": "7.0.0",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.1",
@@ -89,5 +98,58 @@
   "engines": {
     "node": ">= 6.0.0",
     "npm": ">= 3.0.0"
+  },
+
+  "main": "electron/main.js",
+  "build": {
+    "appId": "fr.aciah.cookeys",
+    "productName": "Cookeys",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json",
+      "!node_modules/**"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "icon": "electron/icon.png",
+    "afterPack": "electron/remove-locales.js",
+    "compression": "maximum",
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "maintainer": "Aciah",
+      "category": "Utility",
+      "electronLanguages": ["fr"]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "requestedExecutionLevel": "asInvoker",
+      "legalTrademarks": "Aciah",
+      "electronLanguages": ["fr"]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "deleteAppDataOnUninstall": true,
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "asar": true,
+    "asarUnpack": [
+      "**/*.node",
+      "electron/assets/runtime/**"
+    ],
+    "npmRebuild": false,
+    "nodeGypRebuild": false,
+    "extraMetadata": {
+      "electronLocales": ["fr"]
+    }
   }
 }
