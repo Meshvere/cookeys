@@ -1,0 +1,28 @@
+services:
+  # ---------- MODE DEV ----------
+  cookeys-dev:
+    profiles: ["dev"]
+    container_name: cookeys-dev
+    build:
+      context: .
+      target: build          # on reste sur le stage build (Node 14 + code)
+    command: yarn dev        # ou yarn serve selon ton script
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app               # live‑reload
+      - /app/node_modules     # préserve les deps
+    environment:
+      - NODE_ENV=development
+
+  # ---------- MODE PROD ----------
+  cookeys:
+    profiles: ["prod"]
+    container_name: cookeys-prod
+    build:
+      context: .
+      target: prod           # stage final Nginx
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
