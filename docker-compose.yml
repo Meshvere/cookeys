@@ -1,7 +1,7 @@
 services:
   # ---------- MODE DEV ----------
   cookeys-dev:
-    profiles: ["dev"]
+    profiles: [ "dev" ]
     container_name: cookeys-dev
     build:
       context: .
@@ -17,7 +17,7 @@ services:
 
   # ---------- MODE PROD ----------
   cookeys:
-    profiles: ["prod"]
+    profiles: [ "prod" ]
     container_name: cookeys-prod
     build:
       context: .
@@ -30,9 +30,9 @@ services:
     environment:
       - NODE_ENV=production
 
-  # ---------- MODE PROD ----------
+  # ---------- MODE APP ----------
   cookeys-app:
-    profiles: ["app"]
+    profiles: [ "app" ]
     container_name: cookeys-app
     build:
       context: .
@@ -42,3 +42,31 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=production
+    command: "yarn electron:package"
+
+  cookeys-tauri-linux:
+    profiles: [ "app-tauri" ]
+    container_name: cookeys-tauri-linux
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: tauri
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: yarn tauri build --target x86_64-unknown-linux-gnu
+
+  cookeys-tauri-windows:
+    profiles: [ "app-tauri" ]
+    container_name: cookeys-tauri-windows
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: tauri
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      # optionnel : variables pour Wine / Locale
+      - WINEDEBUG=-all
+    command: yarn tauri build --target x86_64-pc-windows-gnu

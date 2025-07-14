@@ -15,7 +15,8 @@
     "test": "npm run unit",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "electron:serve": "wait-on http://localhost:8080 && electron .",
-    "electron:package": "yarn build && yarn electron-builder --windows --linux"
+    "electron:package": "yarn build && yarn electron-builder --windows --linux",
+    "tauri": "tauri"
   },
   "dependencies": {
     "babel": "^6.23.0",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/polyfill": "^7.11.5",
+    "@tauri-apps/cli": "^2.6.2",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^8.2.1",
@@ -123,7 +125,9 @@
       ],
       "maintainer": "Aciah",
       "category": "Utility",
-      "electronLanguages": ["fr"]
+      "electronLanguages": [
+        "fr"
+      ]
     },
     "win": {
       "target": [
@@ -132,7 +136,9 @@
       ],
       "requestedExecutionLevel": "asInvoker",
       "legalTrademarks": "Aciah",
-      "electronLanguages": ["fr"]
+      "electronLanguages": [
+        "fr"
+      ]
     },
     "nsis": {
       "oneClick": true,
@@ -149,7 +155,9 @@
     "npmRebuild": false,
     "nodeGypRebuild": false,
     "extraMetadata": {
-      "electronLocales": ["fr"]
+      "electronLocales": [
+        "fr"
+      ]
     }
   }
 }
