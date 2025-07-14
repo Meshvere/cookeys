@@ -54,5 +54,41 @@ RUN yarn install --frozen-lockfile
 RUN chown root:root node_modules/electron/dist/chrome-sandbox && \
     chmod 4755 node_modules/electron/dist/chrome-sandbox
 
-# IMPORTANT : lance electron-builder dans le même dossier /app
-RUN yarn electron:package
+# ──────── (4)  STAGE APP – Tauri ────────
+FROM ubuntu:24.04 as tauri
+
+RUN sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
+RUN apt update
+
+# ---------- 1. Dépendances de cross‑compilation ----------
+RUN apt update && \
+    apt install -y build-essential curl \
+      wget \
+      gnupg \
+      libssl-dev \
+      fuse \
+      libayatana-appindicator3-dev \
+      patchelf \
+    mingw-w64 xz-utils zip gnupg2 ca-certificates \
+    git pkg-config libglib2.0-dev \
+    libgtk-3-dev \
+    libwebkit2gtk-4.1-dev \
+    squashfs-tools \
+    wine-stable wine64 nsis nsis-common
+
+# ---------- 2. Node & Yarn ----------
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt install -y nodejs && npm i -g yarn
+
+# ---------- 3. Rust toolchain + cible windows‑gnu ----------
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN rustup target add x86_64-pc-windows-gnu
+
+# ---------- 5. Build ----------
+WORKDIR /app
+COPY . .
+
+# installe deps front, bundle, puis build tauri pour windows
+RUN yarn install --frozen-lockfile
+RUN yarn build
