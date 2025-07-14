@@ -1,9 +1,17 @@
-# ──────── 1️⃣  STAGE BUILD : installation des dépendances ────────
+# ──────── (1)  STAGE BUILD : installation des dépendances ────────
 # Contournement de la version ancienne de Vue.js
 FROM node:14-slim AS build
 
 # Yarn classic
 RUN corepack enable && corepack prepare yarn@1.22.19 --activate
+
+# Ajout de Git pour yarn install
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /app
 
@@ -12,7 +20,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 RUN yarn build        # crée le dossier dist/
 
-# ──────── 2️⃣  STAGE PROD – Nginx ultra‑léger ────────
+# ──────── (2)  STAGE PROD – Nginx ultra‑léger ────────
 FROM nginx:1.27 AS prod
 
 # Copie du build statique
@@ -23,3 +31,28 @@ COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
+
+# ──────── (3)  STAGE APP – ElectronJS Windows & Linux ────────
+FROM electronuserland/builder:wine AS electron-build
+
+# Dépendances Linux que l’image wine n’installe pas toujours
+RUN apt-get update && apt-get install -y \
+    libgtk-3-0 libnss3 libxss1 libasound2 libatk-bridge2.0-0 \
+    libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libgbm1 \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copie l’ensemble du code + le dist depuis l’étape de build
+WORKDIR /app
+COPY . .
+
+WORKDIR /app
+# Mise à jour des dépendances (yarn déjà dispo dans l'image)
+RUN yarn install --frozen-lockfile
+
+# Corrige les permissions du sandbox
+RUN chown root:root node_modules/electron/dist/chrome-sandbox && \
+    chmod 4755 node_modules/electron/dist/chrome-sandbox
+
+# IMPORTANT : lance electron-builder dans le même dossier /app
+RUN yarn electron:package

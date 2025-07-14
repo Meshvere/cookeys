@@ -6,7 +6,7 @@ services:
     build:
       context: .
       target: build          # on reste sur le stage build (Node 14 + code)
-    command: yarn dev        # ou yarn serve selon ton script
+    command: yarn dev
     ports:
       - "8080:8080"
     volumes:
@@ -21,8 +21,24 @@ services:
     container_name: cookeys-prod
     build:
       context: .
-      target: prod           # stage final Nginx
+      target: prod
+    volumes:
+      - .:/app
+      - /app/node_modules
     ports:
       - "80:80"
+    environment:
+      - NODE_ENV=production
+
+  # ---------- MODE PROD ----------
+  cookeys-app:
+    profiles: ["app"]
+    container_name: cookeys-app
+    build:
+      context: .
+      target: electron-build
+    volumes:
+      - .:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=production
