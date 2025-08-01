@@ -1,6 +1,6 @@
 # ──────── (1)  STAGE BUILD : installation des dépendances ────────
 # Contournement de la version ancienne de Vue.js
-FROM node:14-slim AS build
+FROM node:20-slim AS build
 
 # Yarn classic
 RUN corepack enable && corepack prepare yarn@1.22.19 --activate

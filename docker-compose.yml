@@ -10,8 +10,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - .:/app               # live‑reload
-      - /app/node_modules     # préserve les deps
+      - .:/app               # Code du projet
+      - /app/node_modules    # Préserve les dépendances NPM
     environment:
       - NODE_ENV=development
 
